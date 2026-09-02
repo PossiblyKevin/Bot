@@ -1,5 +1,9 @@
 # Axiom Trade
 
+
+http://localhost:3000
+pnpm dev
+
 A safety-first Next.js trading dashboard, initially configured for paper trading.
 
 ## Start locally
