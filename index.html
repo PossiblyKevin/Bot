@@ -3,82 +3,157 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Toobit Quick Fallback Trader</title>
+    <title>Toobit | Strategy Trading & Bot Hub</title>
     <link rel="stylesheet" href="/src/style.css" />
   </head>
   <body>
     <div id="app">
-      <header>
-        <h1>⚡ Toobit Quick Trader</h1>
-        <p class="subtitle">On-the-fly mobile fallback execution panel</p>
+      <header class="navbar">
+        <div class="nav-left">
+          <span class="logo">⚡ TOOBIT <small>PRO BOT HUB</small></span>
+          <nav>
+            <a href="#" class="nav-item active">Trading Bots</a>
+            <a href="#" class="nav-item">Strategy Market</a>
+          </nav>
+        </div>
+        <div class="nav-right">
+          <div class="balance-pill">
+            <span class="lbl">Avail. Bal:</span>
+            <span id="headerBalance" class="val">-- USDT</span>
+          </div>
+          <button id="authModalBtn" class="btn-icon">🔑 API Settings</button>
+        </div>
       </header>
 
-      <main>
-        <section class="card config-card">
-          <h2>🔑 API Credentials</h2>
-          <div class="input-group">
-            <label>API Key</label>
-            <input type="password" id="apiKeyInput" placeholder="Enter your Toobit API Key" />
+      <main class="main-container">
+        
+        <section class="hero-banner">
+          <div class="hero-text">
+            <h2>Automated Strategy & Bot Control</h2>
+            <p>Deploy and monitor Toobit grid and DCA strategies directly on the fly.</p>
           </div>
-          <div class="input-group">
-            <label>Secret Key</label>
-            <input type="password" id="apiSecretInput" placeholder="Enter your Toobit Secret Key" />
+          <div class="hero-stats">
+            <div class="stat-box">
+              <span class="s-label">Active Bots</span>
+              <span id="statActiveBots" class="s-val">0</span>
+            </div>
+            <div class="stat-box">
+              <span class="s-label">Total PnL</span>
+              <span id="statPnl" class="s-val text-green">+0.00 USDT</span>
+            </div>
           </div>
-          <button id="saveConfigBtn" class="btn secondary">Save Credentials Locally</button>
         </section>
 
-        <section class="card trade-card">
-          <h2>🚀 Quick Order Execution</h2>
-          <div class="form-row">
+        <section class="card">
+          <div class="card-header">
+            <h3>🤖 Create Strategy Bot</h3>
+            <span class="badge">Futures Grid & DCA</span>
+          </div>
+          <div class="grid-form">
             <div class="input-group">
-              <label>Market Type</label>
-              <select id="marketType">
-                <option value="spot">Spot (e.g., BTCUSDT)</option>
-                <option value="futures">Futures (e.g., BTC-SWAP-USDT)</option>
+              <label>Bot Strategy Type</label>
+              <select id="botStrategyType">
+                <option value="GRID_NEUTRAL">Futures Grid - Neutral</option>
+                <option value="GRID_LONG">Futures Grid - Long</option>
+                <option value="GRID_SHORT">Futures Grid - Short</option>
+                <option value="DCA_LONG">Futures DCA (Martingale) - Long</option>
+                <option value="DCA_SHORT">Futures DCA (Martingale) - Short</option>
               </select>
             </div>
             <div class="input-group">
-              <label>Symbol</label>
-              <input type="text" id="symbolInput" value="BTCUSDT" placeholder="BTCUSDT" />
-            </div>
-          </div>
-
-          <div class="form-row">
-            <div class="input-group">
-              <label>Side</label>
-              <select id="orderSide">
-                <option value="BUY">BUY / LONG</option>
-                <option value="SELL">SELL / SHORT</option>
-              </select>
+              <label>Trading Pair Symbol</label>
+              <input type="text" id="botSymbol" value="BTC-SWAP-USDT" />
             </div>
             <div class="input-group">
-              <label>Order Type</label>
-              <select id="orderType">
-                <option value="MARKET">MARKET</option>
-                <option value="LIMIT">LIMIT</option>
-              </select>
-            </div>
-          </div>
-
-          <div class="form-row">
-            <div class="input-group" id="priceGroup" style="display:none;">
-              <label>Price</label>
-              <input type="number" id="priceInput" step="0.01" placeholder="0.00" />
+              <label>Investment (USDT)</label>
+              <input type="number" id="botInvestment" value="50" step="1" />
             </div>
             <div class="input-group">
-              <label>Quantity</label>
-              <input type="number" id="quantityInput" step="0.0001" placeholder="0.01" />
+              <label>Leverage</label>
+              <input type="number" id="botLeverage" value="10" min="1" max="100" />
             </div>
           </div>
+          <button id="deployBotBtn" class="btn-primary">🚀 Launch Strategy Bot</button>
+        </section>
 
-          <button id="executeOrderBtn" class="btn primary">⚡ Execute Instant Order</button>
+        <section class="card">
+          <div class="card-header">
+            <h3>🔥 Top AI Strategy Recommendations</h3>
+            <div class="tabs">
+              <button class="tab active">Futures Grid</button>
+              <button class="tab">Futures DCA</button>
+            </div>
+          </div>
+          
+          <div id="strategyGrid" class="strategy-cards-grid">
+            <div class="strategy-card placeholder">
+              <div class="sc-top">
+                <span class="pair">BTC-SWAP-USDT</span>
+                <span class="badge-green">Futures Grid - Long</span>
+              </div>
+              <div class="sc-yield">+84.17%</div>
+              <div class="sc-details">
+                <div><span>7d Backtest APY</span><strong>High Yield</strong></div>
+                <div><span>Grid Cycles</span><strong>1-4 days</strong></div>
+              </div>
+              <button class="btn-secondary use-strategy-btn" data-pair="BTC-SWAP-USDT" data-type="GRID_LONG">Use Strategy</button>
+            </div>
+
+            <div class="strategy-card placeholder">
+              <div class="sc-top">
+                <span class="pair">ETH-SWAP-USDT</span>
+                <span class="badge-green">Futures Grid - Neutral</span>
+              </div>
+              <div class="sc-yield">+70.17%</div>
+              <div class="sc-details">
+                <div><span>7d Backtest APY</span><strong>Medium Risk</strong></div>
+                <div><span>Grid Cycles</span><strong>1-4 days</strong></div>
+              </div>
+              <button class="btn-secondary use-strategy-btn" data-pair="ETH-SWAP-USDT" data-type="GRID_NEUTRAL">Use Strategy</button>
+            </div>
+
+            <div class="strategy-card placeholder">
+              <div class="sc-top">
+                <span class="pair">SOL-SWAP-USDT</span>
+                <span class="badge-green">Futures DCA - Long</span>
+              </div>
+              <div class="sc-yield">+64.91%</div>
+              <div class="sc-details">
+                <div><span>7d Backtest APY</span><strong>High Volatility</strong></div>
+                <div><span>Martingale</span><strong>3-Step DCA</strong></div>
+              </div>
+              <button class="btn-secondary use-strategy-btn" data-pair="SOL-SWAP-USDT" data-type="DCA_LONG">Use Strategy</button>
+            </div>
+          </div>
         </section>
 
         <section class="card console-card">
-          <h2>📋 Execution Log</h2>
-          <pre id="logOutput">System initialized. Waiting for action...</pre>
+          <div class="card-header">
+            <h3>📋 Execution & Telemetry Log</h3>
+            <button id="clearLogBtn" class="text-btn">Clear</button>
+          </div>
+          <pre id="logOutput">[System]: Ready. Enter API credentials or load strategies.</pre>
         </section>
       </main>
+
+      <div id="authModal" class="modal" style="display:none;">
+        <div class="modal-content">
+          <h3>🔑 Toobit API Credentials</h3>
+          <p>Stored locally in your browser memory for direct HMAC signing.</p>
+          <div class="input-group">
+            <label>API Key</label>
+            <input type="password" id="modalApiKey" placeholder="Enter API Key" />
+          </div>
+          <div class="input-group">
+            <label>Secret Key</label>
+            <input type="password" id="modalApiSecret" placeholder="Enter Secret Key" />
+          </div>
+          <div class="modal-actions">
+            <button id="closeModalBtn" class="btn-secondary">Cancel</button>
+            <button id="saveAuthBtn" class="btn-primary">Save & Connect</button>
+          </div>
+        </div>
+      </div>
     </div>
     <script type="module" src="/src/main.ts"></script>
   </body>

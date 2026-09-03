@@ -1,22 +1,19 @@
 import CryptoJS from 'crypto-js';
 import { DEFAULT_CONFIG } from './config';
 
-interface OrderParams {
+interface BotParams {
   symbol: string;
-  side: string;
-  type: string;
-  quantity: number;
-  price?: number;
-  marketType: 'spot' | 'futures';
+  strategyType: string;
+  investment: number;
+  leverage: number;
 }
 
-export class ToobitTrader {
+export class ToobitBotService {
   private apiKey: string;
   private apiSecret: string;
   private baseUrl: string;
 
   constructor() {
-    // Load from LocalStorage if available, fallback to config file
     this.apiKey = localStorage.getItem('toobit_api_key') || DEFAULT_CONFIG.apiKey;
     this.apiSecret = localStorage.getItem('toobit_api_secret') || DEFAULT_CONFIG.apiSecret;
     this.baseUrl = DEFAULT_CONFIG.baseUrl;
@@ -29,49 +26,51 @@ export class ToobitTrader {
     localStorage.setItem('toobit_api_secret', this.apiSecret);
   }
 
+  public hasCredentials(): boolean {
+    return Boolean(this.apiKey && this.apiSecret);
+  }
+
   private generateSignature(queryString: string): string {
     return CryptoJS.HmacSHA256(queryString, this.apiSecret).toString(CryptoJS.enc.Hex);
   }
 
-  public async placeOrder(params: OrderParams): Promise<any> {
-    if (!this.apiKey || !this.apiSecret) {
-      throw new Error("Missing API Key or Secret Key! Please save credentials first.");
-    }
+  public async fetchAccountBalance(): Promise<any> {
+    if (!this.hasCredentials()) throw new Error("API Credentials not configured.");
+    
+    const timestamp = Date.now();
+    const queryString = `timestamp=${timestamp}&recvWindow=10000`;
+    const signature = this.generateSignature(queryString);
+    const url = `${this.baseUrl}/api/v1/accountInfo?${queryString}&signature=${signature}`;
 
-    const endpoint = params.marketType === 'spot' 
-      ? '/api/v1/spot/order' 
-      : '/api/v1/futures/order';
+    const res = await fetch(url, {
+      method: 'GET',
+      headers: { 'X-BB-APIKEY': this.apiKey }
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.retMsg || data.msg || 'Failed to fetch balance');
+    return data;
+  }
+
+  public async deployBot(params: BotParams): Promise<any> {
+    if (!this.hasCredentials()) throw new Error("API Credentials not configured.");
 
     const timestamp = Date.now();
-    
-    // Construct query parameters map according to Toobit documentation specs
+    // Maps standard Toobit strategy creation parameters
     const queryParams: Record<string, any> = {
-      symbol: params.symbol.trim(),
-      side: params.marketType === 'futures' ? (params.side === 'BUY' ? 'BUY_OPEN' : 'SELL_OPEN') : params.side,
-      type: params.type,
-      quantity: params.quantity,
-      recvWindow: 10000,
-      timestamp: timestamp
+      symbol: params.symbol,
+      strategyType: params.strategyType,
+      investment: params.investment,
+      leverage: params.leverage,
+      timestamp: timestamp,
+      recvWindow: 10000
     };
 
-    if (params.type === 'LIMIT' && params.price) {
-      queryParams.price = params.price;
-      queryParams.timeInForce = 'GTC';
-    }
-
-    // Sort and build query string for signature generation
     const sortedKeys = Object.keys(queryParams).sort();
-    const queryString = sortedKeys.map(key => `${key}=${queryParams[key]}`).join('&');
-    
+    const queryString = sortedKeys.map(k => `${k}=${queryParams[k]}`).join('&');
     const signature = this.generateSignature(queryString);
-    const finalQueryString = `${queryString}&signature=${signature}`;
+    const url = `${this.baseUrl}/api/v1/futures/strategy/create?${queryString}&signature=${signature}`;
 
-    // Note: Due to browser CORS policies when calling direct exchange REST APIs, 
-    // a lightweight CORS plugin/extension or a server-side proxy route might be needed 
-    // if Toobit blocks direct browser fetch requests.
-    const url = `${this.baseUrl}${endpoint}?${finalQueryString}`;
-
-    const response = await fetch(url, {
+    const res = await fetch(url, {
       method: 'POST',
       headers: {
         'X-BB-APIKEY': this.apiKey,
@@ -79,10 +78,8 @@ export class ToobitTrader {
       }
     });
 
-    const data = await response.json();
-    if (!response.ok) {
-      throw new Error(data.retMsg || data.msg || JSON.stringify(data));
-    }
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.retMsg || data.msg || JSON.stringify(data));
     return data;
   }
 }

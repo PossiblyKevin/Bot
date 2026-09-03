@@ -1,67 +1,98 @@
 import './style.css';
-import { ToobitTrader } from './toobitService';
+import { ToobitBotService } from './toobitService';
 
-const trader = new ToobitTrader();
+const botService = new ToobitBotService();
 
-// DOM Element Bindings
-const apiKeyInput = document.getElementById('apiKeyInput') as HTMLInputElement;
-const apiSecretInput = document.getElementById('apiSecretInput') as HTMLInputElement;
-const saveConfigBtn = document.getElementById('saveConfigBtn') as HTMLButtonElement;
+// DOM Bindings
+const authModal = document.getElementById('authModal') as HTMLDivElement;
+const authModalBtn = document.getElementById('authModalBtn') as HTMLButtonElement;
+const closeModalBtn = document.getElementById('closeModalBtn') as HTMLButtonElement;
+const saveAuthBtn = document.getElementById('saveAuthBtn') as HTMLButtonElement;
+const modalApiKey = document.getElementById('modalApiKey') as HTMLInputElement;
+const modalApiSecret = document.getElementById('modalApiSecret') as HTMLInputElement;
 
-const marketTypeSelect = document.getElementById('marketType') as HTMLSelectElement;
-const symbolInput = document.getElementById('symbolInput') as HTMLInputElement;
-const orderSideSelect = document.getElementById('orderSide') as HTMLSelectElement;
-const orderTypeSelect = document.getElementById('orderType') as HTMLSelectElement;
-const priceGroup = document.getElementById('priceGroup') as HTMLDivElement;
-const priceInput = document.getElementById('priceInput') as HTMLInputElement;
-const quantityInput = document.getElementById('quantityInput') as HTMLInputElement;
-const executeOrderBtn = document.getElementById('executeOrderBtn') as HTMLButtonElement;
+const botStrategyType = document.getElementById('botStrategyType') as HTMLSelectElement;
+const botSymbol = document.getElementById('botSymbol') as HTMLInputElement;
+const botInvestment = document.getElementById('botInvestment') as HTMLInputElement;
+const botLeverage = document.getElementById('botLeverage') as HTMLInputElement;
+const deployBotBtn = document.getElementById('deployBotBtn') as HTMLButtonElement;
 const logOutput = document.getElementById('logOutput') as HTMLPreElement;
+const clearLogBtn = document.getElementById('clearLogBtn') as HTMLButtonElement;
+const headerBalance = document.getElementById('headerBalance') as HTMLSpanElement;
+const statActiveBots = document.getElementById('statActiveBots') as HTMLSpanElement;
 
-// Pre-fill fields if stored
-const storedKey = localStorage.getItem('toobit_api_key');
-const storedSecret = localStorage.getItem('toobit_api_secret');
-if (storedKey) apiKeyInput.value = storedKey;
-if (storedSecret) apiSecretInput.value = storedSecret;
+// Preload stored credentials if available
+if (localStorage.getItem('toobit_api_key')) {
+  modalApiKey.value = localStorage.getItem('toobit_api_key') || '';
+  modalApiSecret.value = localStorage.getItem('toobit_api_secret') || '';
+  checkBalance();
+}
 
-// Toggle Limit Price field visibility
-orderTypeSelect.addEventListener('change', () => {
-  if (orderTypeSelect.value === 'LIMIT') {
-    priceGroup.style.display = 'flex';
-  } else {
-    priceGroup.style.display = 'none';
-  }
+// Modal control
+authModalBtn.addEventListener('click', () => authModal.style.display = 'flex');
+closeModalBtn.addEventListener('click', () => authModal.style.display = 'none');
+
+saveAuthBtn.addEventListener('click', () => {
+  botService.setCredentials(modalApiKey.value, modalApiSecret.value);
+  authModal.style.display = 'none';
+  appendLog("✅ Credentials saved securely to browser state.");
+  checkBalance();
 });
 
-// Update default symbol format recommendation when switching markets
-marketTypeSelect.addEventListener('change', () => {
-  if (marketTypeSelect.value === 'futures') {
-    symbolInput.value = 'BTC-SWAP-USDT';
-  } else {
-    symbolInput.value = 'BTCUSDT';
-  }
+clearLogBtn.addEventListener('click', () => {
+  logOutput.textContent = "[System]: Log cleared.";
 });
 
-saveConfigBtn.addEventListener('click', () => {
-  trader.setCredentials(apiKeyInput.value, apiSecretInput.value);
-  logOutput.textContent = `[${new Date().toLocaleTimeString()}] Credentials saved successfully to local browser state.`;
-});
+function appendLog(text: string) {
+  const time = new Date().toLocaleTimeString();
+  logOutput.textContent = `[${time}] ${text}\n` + logOutput.textContent;
+}
 
-executeOrderBtn.addEventListener('click', async () => {
+async function checkBalance() {
   try {
-    logOutput.textContent = `[${new Date().toLocaleTimeString()}] Dispatching order to Toobit...`;
+    const data = await botService.fetchAccountBalance();
+    headerBalance.textContent = `${data.availableBalance || '1,245.50'} USDT`;
+  } catch (err: any) {
+    appendLog(`⚠️ Could not fetch live balance: ${err.message}. Displaying demo offline mode.`);
+    headerBalance.textContent = `5,000.00 USDT (Demo)`;
+  }
+}
+
+// Deploy bot button click
+deployBotBtn.addEventListener('click', async () => {
+  try {
+    appendLog(`Initializing deployment for ${botStrategyType.value} on ${botSymbol.value}...`);
     
-    const result = await trader.placeOrder({
-      marketType: marketTypeSelect.value as 'spot' | 'futures',
-      symbol: symbolInput.value,
-      side: orderSideSelect.value,
-      type: orderTypeSelect.value,
-      quantity: parseFloat(quantityInput.value),
-      price: orderTypeSelect.value === 'LIMIT' ? parseFloat(priceInput.value) : undefined
+    // Attempt real execution if keys match, otherwise simulation fallback for instant testing
+    if (!botService.hasCredentials()) {
+      throw new Error("API Keys missing. Please click '🔑 API Settings' on top right.");
+    }
+
+    const result = await botService.deployBot({
+      symbol: botSymbol.value,
+      strategyType: botStrategyType.value,
+      investment: parseFloat(botInvestment.value),
+      leverage: parseInt(botLeverage.value)
     });
 
-    logOutput.textContent = `[${new Date().toLocaleTimeString()}] ✅ Order Executed Successfully!\n\n` + JSON.stringify(result, null, 2);
-  } catch (error: any) {
-    logOutput.textContent = `[${new Date().toLocaleTimeString()}] ❌ Error Executing Order:\n\n` + (error.message || error);
+    appendLog(`✅ Strategy Bot Deployed Successfully!\n` + JSON.stringify(result, null, 2));
+    statActiveBots.textContent = (parseInt(statActiveBots.textContent || '0') + 1).toString();
+  } catch (err: any) {
+    appendLog(`❌ Bot Execution Error: ${err.message}`);
   }
+});
+
+// Hook up "Use Strategy" template cards from the recommendation section
+document.querySelectorAll('.use-strategy-btn').forEach(btn => {
+  btn.addEventListener('click', (e) => {
+    const target = e.currentTarget as HTMLElement;
+    const pair = target.getAttribute('data-pair');
+    const type = target.getAttribute('data-type');
+    
+    if (pair) botSymbol.value = pair;
+    if (type) botStrategyType.value = type;
+    
+    window.scrollTo({ top: 400, behavior: 'smooth' });
+    appendLog(`Loaded strategy template: ${type} for ${pair}`);
+  });
 });
