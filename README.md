@@ -6,12 +6,7 @@ pnpm dev
 
 A safety-first Next.js trading dashboard, initially configured for paper trading.
 
-## Start locally
-
-1. Copy `.env.example` to `.env.local`.
-2. Leave `LIVE_TRADING_ENABLED=false`.
-3. Install dependencies with `npm install`.
-4. Start the dashboard with `npm run dev`.
+#
 
 Open `http://localhost:3000`. The dashboard intentionally uses simulated data and records paper orders only.
 
