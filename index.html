@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Toobit Quick Fallback Trader</title>
+    <link rel="stylesheet" href="/src/style.css" />
+  </head>
+  <body>
+    <div id="app">
+      <header>
+        <h1>⚡ Toobit Quick Trader</h1>
+        <p class="subtitle">On-the-fly mobile fallback execution panel</p>
+      </header>
+
+      <main>
+        <section class="card config-card">
+          <h2>🔑 API Credentials</h2>
+          <div class="input-group">
+            <label>API Key</label>
+            <input type="password" id="apiKeyInput" placeholder="Enter your Toobit API Key" />
+          </div>
+          <div class="input-group">
+            <label>Secret Key</label>
+            <input type="password" id="apiSecretInput" placeholder="Enter your Toobit Secret Key" />
+          </div>
+          <button id="saveConfigBtn" class="btn secondary">Save Credentials Locally</button>
+        </section>
+
+        <section class="card trade-card">
+          <h2>🚀 Quick Order Execution</h2>
+          <div class="form-row">
+            <div class="input-group">
+              <label>Market Type</label>
+              <select id="marketType">
+                <option value="spot">Spot (e.g., BTCUSDT)</option>
+                <option value="futures">Futures (e.g., BTC-SWAP-USDT)</option>
+              </select>
+            </div>
+            <div class="input-group">
+              <label>Symbol</label>
+              <input type="text" id="symbolInput" value="BTCUSDT" placeholder="BTCUSDT" />
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="input-group">
+              <label>Side</label>
+              <select id="orderSide">
+                <option value="BUY">BUY / LONG</option>
+                <option value="SELL">SELL / SHORT</option>
+              </select>
+            </div>
+            <div class="input-group">
+              <label>Order Type</label>
+              <select id="orderType">
+                <option value="MARKET">MARKET</option>
+                <option value="LIMIT">LIMIT</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="input-group" id="priceGroup" style="display:none;">
+              <label>Price</label>
+              <input type="number" id="priceInput" step="0.01" placeholder="0.00" />
+            </div>
+            <div class="input-group">
+              <label>Quantity</label>
+              <input type="number" id="quantityInput" step="0.0001" placeholder="0.01" />
+            </div>
+          </div>
+
+          <button id="executeOrderBtn" class="btn primary">⚡ Execute Instant Order</button>
+        </section>
+
+        <section class="card console-card">
+          <h2>📋 Execution Log</h2>
+          <pre id="logOutput">System initialized. Waiting for action...</pre>
+        </section>
+      </main>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
