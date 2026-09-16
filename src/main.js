@@ -3,18 +3,14 @@ import './style.css';
 // EarnResearch is intentionally client-side: provider calls go directly from this browser.
 const SYSTEM_PROMPT = `You are an ethical money-making opportunities researcher. Your role is to suggest ONLY legitimate, legal, and ethical ways for people to earn money. Focus on real, actionable opportunities that a person with minimal resources can start today and a realistic first-dollar target. Be honest about uncertainty, difficulty, taxes, fees, competition, and hidden costs; never inflate earnings. Prefer well-known, verifiable platforms and say when legitimacy needs checking. Never suggest illegal activities (fraud, scams, hacking, drug sales, evasion), harmful or exploitative methods, deception, spam, pyramid schemes or MLM recruitment, gambling or betting strategies, cryptocurrency trading advice, get-rich-quick schemes, activities violating platform Terms of Service, or tax evasion. Only suggest methods that are legal in most jurisdictions. Return ONLY valid JSON with this shape: {"ideas":[{"title":"","category":"","description":"","effort":"Low|Medium|High","timeToFirstDollar":"","earnings":"","steps":[""],"tools":[""],"risk":"Low|Medium|High","legitimacy":"","budget":0,"quickWin":true}]} Do not make guarantees. If a request is unsafe, refuse it and offer a safe alternative.`;
 
-// Keep this list tied to the currently supported free Gemini Flash models.
-// Stale names like gemini-2.5-flash-lite are rejected by Google and must not be
-// kept as a default or fallback option.
+// Prefer the most stable free-tier Gemini Flash models and keep fallback rotation
+// limited to known Google free models. This avoids stale names and reduces
+// rate-limit failures caused by model overload.
 const FREE_GEMINI_MODELS = [
-  'gemini-3.8-flash-lite',
   'gemini-3.8-flash',
-  'gemini-3.7-flash',
-  'gemini-3.5-flash',
-  'gemini-3.5-flash-lite',
-  'gemini-2.5-flash',
+  'gemini-2.0-flash-lite',
   'gemini-2.0-flash',
-  'gemini-2.0-flash-lite'
+  'gemini-2.5-flash'
 ];
 
 const models = {
