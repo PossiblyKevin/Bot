@@ -1,160 +1,53 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Toobit | Strategy Trading & Bot Hub</title>
-    <link rel="stylesheet" href="/src/style.css" />
-  </head>
-  <body>
-    <div id="app">
-      <header class="navbar">
-        <div class="nav-left">
-          <span class="logo">⚡ TOOBIT <small>PRO BOT HUB</small></span>
-          <nav>
-            <a href="#" class="nav-item active">Trading Bots</a>
-            <a href="#" class="nav-item">Strategy Market</a>
-          </nav>
-        </div>
-        <div class="nav-right">
-          <div class="balance-pill">
-            <span class="lbl">Avail. Bal:</span>
-            <span id="headerBalance" class="val">-- USDT</span>
-          </div>
-          <button id="authModalBtn" class="btn-icon">🔑 API Settings</button>
-        </div>
-      </header>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="EarnResearch — realistic, ethical ways to earn your first dollar." />
+  <title>EarnResearch — ethical earning ideas</title>
+  <link rel="stylesheet" href="/src/style.css" />
+</head>
+<body>
+  <div id="app">
+    <header class="topbar">
+      <a class="brand" href="#top"><span class="brand-mark">$</span><span>EarnResearch<small>real work. real steps.</small></span></a>
+      <nav><a href="#ideas">Research</a><a href="#saved">Saved</a><a href="#how">How it works</a></nav>
+      <div class="top-actions"><button class="icon-btn" id="themeBtn" title="Toggle theme">☼</button><button class="outline-btn" id="settingsBtn">⚙ Settings</button></div>
+    </header>
 
-      <main class="main-container">
-        
-        <section class="hero-banner">
-          <div class="hero-text">
-            <h2>Automated Strategy & Bot Control</h2>
-            <p>Deploy and monitor Toobit grid and DCA strategies directly on the fly.</p>
-          </div>
-          <div class="hero-stats">
-            <div class="stat-box">
-              <span class="s-label">Active Bots</span>
-              <span id="statActiveBots" class="s-val">0</span>
-            </div>
-            <div class="stat-box">
-              <span class="s-label">Total PnL</span>
-              <span id="statPnl" class="s-val text-green">+0.00 USDT</span>
-            </div>
-          </div>
+    <main id="top" class="container">
+      <section class="hero">
+        <div class="hero-copy"><span class="eyebrow">ETHICAL EARNING RESEARCH</span><h1>Find your next<br><em>realistic win.</em></h1><p>Research practical ways to earn from $1 upward — filtered for your time, skills, budget, and boundaries.</p><div class="hero-actions"><button class="primary-btn" id="startBtn">Start researching <span>→</span></button><button class="text-btn" id="sampleBtn">Try an example</button></div></div>
+        <div class="hero-art"><div class="art-orb">$<span>+</span></div><div class="floating-card card-one">✓ No hype<br><small>Practical & transparent</small></div><div class="floating-card card-two">24–48h<br><small>Quick wins</small></div></div>
+      </section>
+
+      <section class="notice"><span>◎</span><p><strong>Safety first.</strong> Suggestions are educational, not financial or legal advice. Verify local laws, taxes, fees, and platform terms before acting.</p><button id="dismissNotice">×</button></section>
+
+      <section id="research" class="research-layout">
+        <aside class="sidebar card"><div class="section-heading"><span class="step">01</span><div><h2>Personalize</h2><p>Better context, better ideas.</p></div></div>
+          <label>What can you do?</label><textarea id="skills" placeholder="e.g. writing, spreadsheets, photography..."></textarea>
+          <label>Time available daily</label><select id="time"><option>15–30 minutes</option><option>1–2 hours</option><option>3–5 hours</option><option>Full-time</option></select>
+          <label>Equipment</label><input id="equipment" placeholder="Phone, laptop, car..." />
+          <label>General region <span class="muted">(not exact)</span></label><input id="region" placeholder="Country or broad region" />
+          <label>Starting budget</label><select id="budget"><option value="0">$0 — zero budget</option><option value="25">Under $25</option><option value="100">Under $100</option><option value="more">Flexible</option></select>
+          <div class="toggle-row"><span>Quick Win mode <small>first dollar in 48h</small></span><input type="checkbox" id="quickWin" /></div><div class="toggle-row"><span>Zero Budget only</span><input type="checkbox" id="zeroBudget" /></div>
+        </aside>
+        <section class="results" id="ideas"><div class="section-heading result-heading"><span class="step">02</span><div><h2>Research opportunities</h2><p>Honest ideas matched to your reality.</p></div><button class="outline-btn small" id="settingsInline">API settings</button></div>
+          <div class="searchbar"><span>⌕</span><input id="query" placeholder="What would you like to earn from?" /><button class="primary-btn" id="generateBtn">Generate ideas <span>✦</span></button></div>
+          <div class="filter-row"><div class="tabs" id="categoryTabs"><button class="active" data-cat="All">All</button><button data-cat="Quick wins">Quick wins</button><button data-cat="Freelance">Freelance</button><button data-cat="Selling">Selling</button><button data-cat="Local">Local</button><button data-cat="Learning">Teaching</button></div><button class="text-btn" id="trendingBtn">↗ Trending</button></div>
+          <div id="status" class="status" hidden></div><div id="ideaGrid" class="idea-grid"></div>
         </section>
+      </section>
 
-        <section class="card">
-          <div class="card-header">
-            <h3>🤖 Create Strategy Bot</h3>
-            <span class="badge">Futures Grid & DCA</span>
-          </div>
-          <div class="grid-form">
-            <div class="input-group">
-              <label>Bot Strategy Type</label>
-              <select id="botStrategyType">
-                <option value="GRID_NEUTRAL">Futures Grid - Neutral</option>
-                <option value="GRID_LONG">Futures Grid - Long</option>
-                <option value="GRID_SHORT">Futures Grid - Short</option>
-                <option value="DCA_LONG">Futures DCA (Martingale) - Long</option>
-                <option value="DCA_SHORT">Futures DCA (Martingale) - Short</option>
-              </select>
-            </div>
-            <div class="input-group">
-              <label>Trading Pair Symbol</label>
-              <input type="text" id="botSymbol" value="BTC-SWAP-USDT" />
-            </div>
-            <div class="input-group">
-              <label>Investment (USDT)</label>
-              <input type="number" id="botInvestment" value="50" step="1" />
-            </div>
-            <div class="input-group">
-              <label>Leverage</label>
-              <input type="number" id="botLeverage" value="10" min="1" max="100" />
-            </div>
-          </div>
-          <button id="deployBotBtn" class="btn-primary">🚀 Launch Strategy Bot</button>
-        </section>
+      <section id="saved" class="lower-grid"><div class="card"><div class="section-heading"><span class="step">03</span><div><h2>Your progress</h2><p>Small actions compound.</p></div></div><div class="progress-wrap"><div class="progress-ring"><strong id="progressCount">0</strong><small>completed</small></div><div><h3 id="pursuingCount">0 ideas in motion</h3><p class="muted">Save an idea to start tracking it.</p><button class="text-btn" id="exportBtn">Export your data ↓</button></div></div></div><div class="card"><div class="card-head"><div><h2>Earnings log</h2><p>Celebrate proof, not promises.</p></div><button class="outline-btn small" id="addEarningBtn">+ Log earning</button></div><div id="earningsList" class="empty-state">No earnings logged yet.</div></div></section>
+      <section id="how" class="how card"><span class="eyebrow">HOW IT WORKS</span><h2>A calmer path to your first dollar.</h2><div class="how-grid"><div><b>01 · Tell us your constraints</b><p>Time, tools, skills, location context, and budget shape every recommendation.</p></div><div><b>02 · Research with guardrails</b><p>Your chosen LLM receives a strict ethical prompt and returns structured, realistic ideas.</p></div><div><b>03 · Take one small action</b><p>Save an idea, generate its action plan, track progress, and log what actually happened.</p></div></div></section>
+    </main>
 
-        <section class="card">
-          <div class="card-header">
-            <h3>🔥 Top AI Strategy Recommendations</h3>
-            <div class="tabs">
-              <button class="tab active">Futures Grid</button>
-              <button class="tab">Futures DCA</button>
-            </div>
-          </div>
-          
-          <div id="strategyGrid" class="strategy-cards-grid">
-            <div class="strategy-card placeholder">
-              <div class="sc-top">
-                <span class="pair">BTC-SWAP-USDT</span>
-                <span class="badge-green">Futures Grid - Long</span>
-              </div>
-              <div class="sc-yield">+84.17%</div>
-              <div class="sc-details">
-                <div><span>7d Backtest APY</span><strong>High Yield</strong></div>
-                <div><span>Grid Cycles</span><strong>1-4 days</strong></div>
-              </div>
-              <button class="btn-secondary use-strategy-btn" data-pair="BTC-SWAP-USDT" data-type="GRID_LONG">Use Strategy</button>
-            </div>
+    <footer><span>EarnResearch © 2024</span><span>Your API key stays in your browser. No EarnResearch server.</span><button class="text-btn" id="clearDataBtn">Clear all local data</button></footer>
 
-            <div class="strategy-card placeholder">
-              <div class="sc-top">
-                <span class="pair">ETH-SWAP-USDT</span>
-                <span class="badge-green">Futures Grid - Neutral</span>
-              </div>
-              <div class="sc-yield">+70.17%</div>
-              <div class="sc-details">
-                <div><span>7d Backtest APY</span><strong>Medium Risk</strong></div>
-                <div><span>Grid Cycles</span><strong>1-4 days</strong></div>
-              </div>
-              <button class="btn-secondary use-strategy-btn" data-pair="ETH-SWAP-USDT" data-type="GRID_NEUTRAL">Use Strategy</button>
-            </div>
-
-            <div class="strategy-card placeholder">
-              <div class="sc-top">
-                <span class="pair">SOL-SWAP-USDT</span>
-                <span class="badge-green">Futures DCA - Long</span>
-              </div>
-              <div class="sc-yield">+64.91%</div>
-              <div class="sc-details">
-                <div><span>7d Backtest APY</span><strong>High Volatility</strong></div>
-                <div><span>Martingale</span><strong>3-Step DCA</strong></div>
-              </div>
-              <button class="btn-secondary use-strategy-btn" data-pair="SOL-SWAP-USDT" data-type="DCA_LONG">Use Strategy</button>
-            </div>
-          </div>
-        </section>
-
-        <section class="card console-card">
-          <div class="card-header">
-            <h3>📋 Execution & Telemetry Log</h3>
-            <button id="clearLogBtn" class="text-btn">Clear</button>
-          </div>
-          <pre id="logOutput">[System]: Ready. Enter API credentials or load strategies.</pre>
-        </section>
-      </main>
-
-      <div id="authModal" class="modal" style="display:none;">
-        <div class="modal-content">
-          <h3>🔑 Toobit API Credentials</h3>
-          <p>Stored locally in your browser memory for direct HMAC signing.</p>
-          <div class="input-group">
-            <label>API Key</label>
-            <input type="password" id="modalApiKey" placeholder="Enter API Key" />
-          </div>
-          <div class="input-group">
-            <label>Secret Key</label>
-            <input type="password" id="modalApiSecret" placeholder="Enter Secret Key" />
-          </div>
-          <div class="modal-actions">
-            <button id="closeModalBtn" class="btn-secondary">Cancel</button>
-            <button id="saveAuthBtn" class="btn-primary">Save & Connect</button>
-          </div>
-        </div>
-      </div>
-    </div>
-    <script type="module" src="/src/main.ts"></script>
-  </body>
-</html>
+    <div class="modal-backdrop" id="settingsModal" hidden><div class="modal card"><button class="modal-close" data-close>×</button><span class="eyebrow">PRIVATE BY DESIGN</span><h2>LLM connection</h2><p class="muted">Keys are encrypted with your vault passphrase and stored only in this browser. They are sent directly to your selected provider.</p><label>Provider</label><select id="provider"><option value="gemini">Google Gemini (recommended)</option><option value="openai">OpenAI</option><option value="anthropic">Anthropic</option></select><label>Model</label><select id="model"></select><label>API key</label><input type="password" id="apiKey" placeholder="Paste your provider key" autocomplete="off" /><label>Vault passphrase <span class="muted">(required to encrypt/decrypt)</span></label><input type="password" id="vaultPass" placeholder="Use a phrase you can remember" autocomplete="new-password" /><div class="modal-actions"><button class="outline-btn" data-close>Cancel</button><button class="primary-btn" id="saveSettings">Save & test connection</button></div><div id="connectionStatus" class="status" hidden></div></div></div>
+    <div class="modal-backdrop" id="detailModal" hidden><div class="modal detail-modal"><button class="modal-close" data-close>×</button><div id="detailContent"></div></div></div>
+    <div class="toast" id="toast"></div>
+  </div>
+  <script type="module" src="/src/main.js"></script>
+</body></html>
